@@ -1,227 +1,226 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PZEM Monitoring - Simulasi</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PZEM Monitoring - Modern Dashboard</title>
 
-  <!-- Canvas Gauges -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-gauges@2.1.7/gauge.min.js"></script>
+<!-- Canvas Gauges -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-gauges@2.1.7/gauge.min.js"></script>
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <style>
-    body {
-      background: #eef2f7;
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      margin: 0;
-    }
-
-    h2 {
-      text-align: center;
-      color: #222;
-      margin-bottom: 6px;
-    }
-
-    .section-title {
-      text-align: center;
-      font-weight: bold;
-      margin-top: 30px;
-      margin-bottom: 10px;
-      font-size: 22px;
-      color: #333;
-    }
-
-    .container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      max-width: 1300px;
-      margin: 0 auto;
-    }
-
-    .box {
-      background: #ffffff;
-      padding: 15px;
-      border-radius: 12px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-      text-align: center;
-      width: 280px;
-    }
-
-    .display {
-      font-size: 28px;
-      font-weight: bold;
-      margin-top: 10px;
-      color: #444;
-    }
-
-    canvas.chart {
-      background: #fff;
-      padding: 10px;
-      border-radius: 10px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    }
-  </style>
-</head>
-<body>
-
-  <h2>PZEM Real-Time Monitoring (Simulasi)</h2>
-  <h2>Kelas Elektronika Daya - 2025</h2>
-
-  <!-- ===================== GAUGES ===================== -->
-  <div class="section-title">Gauge Monitoring</div>
-  <div class="container">
-    <div class="box">
-      <canvas id="gVolt"></canvas>
-      <div class="display" id="dVolt">0 V</div>
-    </div>
-
-    <div class="box">
-      <canvas id="gArus"></canvas>
-      <div class="display" id="dArus">0 A</div>
-    </div>
-
-    <div class="box">
-      <canvas id="gDaya"></canvas>
-      <div class="display" id="dDaya">0 W</div>
-    </div>
-
-    <div class="box">
-      <canvas id="gKwh"></canvas>
-      <div class="display" id="dKwh">0 kWh</div>
-    </div>
-
-    <div class="box">
-      <canvas id="gFrek"></canvas>
-      <div class="display" id="dFrek">0 Hz</div>
-    </div>
-
-    <div class="box">
-      <canvas id="gPf"></canvas>
-      <div class="display" id="dPf">0</div>
-    </div>
-  </div>
-
-  <!-- ===================== GRAFIK ===================== -->
-  <div class="section-title">Grafik Real-Time</div>
-
-  <div class="container">
-    <canvas id="chartVolt" width="350" height="250" class="chart"></canvas>
-    <canvas id="chartArus" width="350" height="250" class="chart"></canvas>
-    <canvas id="chartDaya" width="350" height="250" class="chart"></canvas>
-    <canvas id="chartKwh" width="350" height="250" class="chart"></canvas>
-    <canvas id="chartFrek" width="350" height="250" class="chart"></canvas>
-    <canvas id="chartPf" width="350" height="250" class="chart"></canvas>
-  </div>
-
-<script>
-// ===================== GAUGE SETUP =====================
-function createGauge(id, max, unit, color) {
-  return new RadialGauge({
-    renderTo: id,
-    width: 220,
-    height: 220,
-    minValue: 0,
-    maxValue: max,
-    units: unit,
-    colorValueBoxRect: color,
-    colorValueBoxBackground: "#fff",
-    value: 0,
-    majorTicks: [],
-    minorTicks: 5,
-    strokeTicks: true,
-    highlights: [{ from: max * .7, to: max, color: color }],
-    animation: true,
-    animationDuration: 300,
-    animationRule: "linear"
-  }).draw();
-}
-
-const gVolt = createGauge("gVolt", 300, "V", "#ff5722");
-const gArus = createGauge("gArus", 50, "A", "#2196f3");
-const gDaya = createGauge("gDaya", 5000, "W", "#4caf50");
-const gKwh  = createGauge("gKwh", 100, "kWh", "#ff9800");
-const gFrek = createGauge("gFrek", 60, "Hz", "#9c27b0");
-const gPf   = createGauge("gPf", 1, "", "#795548");
-
-// ===================== CHART SETUP =====================
-function createChart(id, label, color) {
-  return new Chart(document.getElementById(id), {
-    type: "line",
-    data: {
-      labels: [],
-      datasets: [{
-        label: label,
-        data: [],
-        fill: false,
-        tension: 0.4,        // smooth line
-        borderColor: color,
-        borderWidth: 2
-      }]
-    },
-    options: {
-      animation: false,
-      scales: { y: { beginAtZero: false } }
-    }
-  });
-}
-
-const chartVolt = createChart("chartVolt", "Volt (V)", "#ff5722");
-const chartArus = createChart("chartArus", "Arus (A)", "#2196f3");
-const chartDaya = createChart("chartDaya", "Daya (W)", "#4caf50");
-const chartKwh  = createChart("chartKwh", "Energi (kWh)", "#ff9800");
-const chartFrek = createChart("chartFrek", "Frekuensi (Hz)", "#9c27b0");
-const chartPf   = createChart("chartPf", "Power Factor", "#795548");
-
-// ===================== SIMULASI DATA =====================
-setInterval(() => {
-  let volt = 210 + Math.random() * 40;
-  let arus = Math.random() * 10;
-  let daya = volt * arus;
-  let kwh  = (Math.random() * 10).toFixed(2);
-  let frek = 49 + Math.random() * 2;
-  let pf   = (0.6 + Math.random() * 0.4).toFixed(2);
-
-  // UPDATE GAUGE
-  gVolt.value = volt;
-  gArus.value = arus;
-  gDaya.value = daya;
-  gKwh.value  = kwh;
-  gFrek.value = frek;
-  gPf.value   = pf;
-
-  // UPDATE DISPLAY
-  dVolt.innerText = volt.toFixed(1) + " V";
-  dArus.innerText = arus.toFixed(2) + " A";
-  dDaya.innerText = daya.toFixed(1) + " W";
-  dKwh.innerText  = kwh + " kWh";
-  dFrek.innerText = frek.toFixed(2) + " Hz";
-  dPf.innerText   = pf;
-
-  // UPDATE GRAFIK  
-  function push(chart, val) {
-    if (chart.data.labels.length > 20) {
-      chart.data.labels.shift();
-      chart.data.datasets[0].data.shift();
-    }
-    chart.data.labels.push("");
-    chart.data.datasets[0].data.push(val);
-    chart.update();
+<style>
+  body {
+    background: #eef2f7;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 20px;
   }
 
-  push(chartVolt, volt);
-  push(chartArus, arus);
-  push(chartDaya, daya);
-  push(chartKwh, kwh);
-  push(chartFrek, frek);
-  push(chartPf, pf);
+  h2 {
+    text-align: center;
+    color: #222;
+    margin: 5px 0;
+  }
 
-}, 1000);
+  .container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+    max-width: 1350px;
+    margin: 0 auto;
+  }
 
+  .box {
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 14px;
+    text-align: center;
+    width: 260px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  }
+
+  .value-display {
+    font-size: 26px;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #111;
+  }
+
+  /* Chart container */
+  #chartBox {
+    margin: 30px auto;
+    background: #fff;
+    width: 95%;
+    max-width: 1100px;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  }
+</style>
+</head>
+
+<body>
+
+<h2>Real-Time Monitoring (Simulasi)</h2>
+<h2>Kelompok 02 Jalaludin Achmad Akbar-021</h2>
+
+<div class="container">
+
+  <div class="box">
+    <canvas id="gVolt" data-type="radial-gauge"
+      data-width="230" data-height="230"
+      data-min-value="0" data-max-value="300"
+      data-major-ticks="0,50,100,150,200,250,300"
+      data-units="Volt" data-title="Tegangan"
+      data-value="0" data-color-value="#ff3d00"
+      data-color-plate="#fafafa"
+      data-glow="true"></canvas>
+    <div class="value-display" id="valVolt">0 V</div>
+  </div>
+
+  <div class="box">
+    <canvas id="gArus" data-type="radial-gauge"
+      data-width="230" data-height="230"
+      data-min-value="0" data-max-value="50"
+      data-major-ticks="0,5,10,15,20,25,30,35,40,45,50"
+      data-units="Ampere" data-title="Arus"
+      data-value="0" data-color-value="#2979ff"
+      data-color-plate="#fafafa"
+      data-glow="true"></canvas>
+    <div class="value-display" id="valArus">0 A</div>
+  </div>
+
+  <div class="box">
+    <canvas id="gDaya" data-type="radial-gauge"
+      data-width="230" data-height="230"
+      data-min-value="0" data-max-value="5000"
+      data-major-ticks="0,1000,2000,3000,4000,5000"
+      data-units="Watt" data-title="Daya"
+      data-value="0" data-color-value="#00c853"
+      data-color-plate="#fafafa"
+      data-glow="true"></canvas>
+    <div class="value-display" id="valDaya">0 W</div>
+  </div>
+
+  <div class="box">
+    <canvas id="gKwh" data-type="radial-gauge"
+      data-width="230" data-height="230"
+      data-min-value="0" data-max-value="100"
+      data-major-ticks="0,20,40,60,80,100"
+      data-units="kWh" data-title="Energi"
+      data-value="0" data-color-value="#ff9100"
+      data-color-plate="#fafafa"
+      data-glow="true"></canvas>
+    <div class="value-display" id="valKwh">0 kWh</div>
+  </div>
+
+  <div class="box">
+    <canvas id="gFrek" data-type="radial-gauge"
+      data-width="230" data-height="230"
+      data-min-value="40" data-max-value="60"
+      data-major-ticks="40,45,50,55,60"
+      data-units="Hz" data-title="Frekuensi"
+      data-value="50" data-color-value="#9c27b0"
+      data-color-plate="#fafafa"
+      data-glow="true"></canvas>
+    <div class="value-display" id="valFrek">50 Hz</div>
+  </div>
+
+  <div class="box">
+    <canvas id="gPf" data-type="radial-gauge"
+      data-width="230" data-height="230"
+      data-min-value="0" data-max-value="1"
+      data-major-ticks="0,0.2,0.4,0.6,0.8,1.0"
+      data-units="" data-title="Power Factor"
+      data-value="0" data-color-value="#6d4c41"
+      data-color-plate="#fafafa"
+      data-glow="true"></canvas>
+    <div class="value-display" id="valPf">0.00</div>
+  </div>
+
+</div>
+
+<!-- ==== REAL-TIME CHART ==== -->
+<div id="chartBox">
+  <canvas id="chartVolt"></canvas>
+</div>
+
+<script>
+window.addEventListener('load', () => {
+  setTimeout(() => {
+
+    const gauges = window.gauges;
+    const gV = gauges[0];
+    const gA = gauges[1];
+    const gW = gauges[2];
+    const gK = gauges[3];
+    const gF = gauges[4];
+    const gPf = gauges[5];
+
+    // ==== SETUP CHART ====
+    const ctx = document.getElementById("chartVolt");
+    const chartVolt = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: [],
+        datasets: [{
+          label: "Tegangan (V)",
+          data: [],
+          borderWidth: 2,
+          tension: 0.25
+        }]
+      },
+      options: {
+        responsive: true,
+        animation: false,
+        scales: { y: { beginAtZero: false } }
+      }
+    });
+
+    // ===== UPDATE DATA SIMULASI =====
+    setInterval(() => {
+
+      let volt = 210 + Math.random() * 40;
+      let arus = Math.random() * 10;
+      let daya = volt * arus;
+      let kwh  = (Math.random() * 10).toFixed(2);
+      let frek = 49 + Math.random() * 2;
+      let pf   = (0.6 + Math.random() * 0.4).toFixed(2);
+
+      gV.value = volt;
+      gA.value = arus;
+      gW.value = daya;
+      gK.value = kwh;
+      gF.value = frek;
+      gPf.value = pf;
+
+      document.getElementById("valVolt").innerHTML = volt.toFixed(1) + " V";
+      document.getElementById("valArus").innerHTML = arus.toFixed(2) + " A";
+      document.getElementById("valDaya").innerHTML = daya.toFixed(0) + " W";
+      document.getElementById("valKwh").innerHTML = kwh + " kWh";
+      document.getElementById("valFrek").innerHTML = frek.toFixed(2) + " Hz";
+      document.getElementById("valPf").innerHTML = pf;
+
+      // update chart
+      const now = new Date().toLocaleTimeString();
+      chartVolt.data.labels.push(now);
+      chartVolt.data.datasets[0].data.push(volt);
+
+      if (chartVolt.data.labels.length > 20) {
+        chartVolt.data.labels.shift();
+        chartVolt.data.datasets[0].data.shift();
+      }
+
+      chartVolt.update();
+
+    }, 1000);
+
+  }, 800);
+});
 </script>
 
 </body>

@@ -1,80 +1,96 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>PZEM - Text Only</title>
+  <meta charset="UTF-8" />
+  <title>PZEM – Simple Display (Simulation)</title>
+
   <style>
     body {
-      background: #f0f0f0;
-      font-family: monospace;
-      padding: 30px;
-      line-height: 1.6;
+      background: #eef2f7;
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
     }
-    .data {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      max-width: 500px;
-      margin: 0 auto;
+
+    .card {
+      background: #ffffff;
+      padding: 25px 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 360px;
+      line-height: 1.7;
     }
-    .label {
-      font-weight: bold;
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
       color: #333;
     }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .label {
+      font-weight: bold;
+      color: #555;
+    }
+
     .value {
       color: #d32f2f;
+      font-weight: bold;
+      min-width: 60px;
+      text-align: right;
     }
   </style>
-  <!-- Paho MQTT -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
 </head>
+
 <body>
-  <h2 style="text-align: center;">🔌 PZEM - Text Display</h2>
-  
-  <div class="data">
-    <div><span class="label">Tegangan:</span> <span id="volt" class="value">--</span> V</div>
-    <div><span class="label">Arus:</span> <span id="arus" class="value">--</span> A</div>
-    <div><span class="label">Daya:</span> <span id="daya" class="value">--</span> W</div>
-    <div><span class="label">Energi:</span> <span id="kwh" class="value">--</span> kWh</div>
-    <div><span class="label">Frekuensi:</span> <span id="frek" class="value">--</span> Hz</div>
-    <div><span class="label">PF:</span> <span id="pf" class="value">--</span></div>
+
+  <div class="card">
+    <h2>🔌 PZEM – Data (Simulation)</h2>
+
+    <div class="row"><span class="label">Tegangan</span><span id="volt" class="value">--</span> <span>V</span></div>
+    <div class="row"><span class="label">Arus</span><span id="arus" class="value">--</span> <span>A</span></div>
+    <div class="row"><span class="label">Daya</span><span id="daya" class="value">--</span> <span>W</span></div>
+    <div class="row"><span class="label">Energi</span><span id="kwh" class="value">--</span> <span>kWh</span></div>
+    <div class="row"><span class="label">Frekuensi</span><span id="frek" class="value">--</span> <span>Hz</span></div>
+    <div class="row"><span class="label">Power Factor</span><span id="pf" class="value">--</span></div>
   </div>
 
+
   <script>
-    // Buat client MQTT
-    const client = new Paho.MQTT.Client(
-      "test.mosquitto.org",
-      8081,
-      "/mqtt",
-      "pzem-text-" + Date.now()
-    );
+    // --- SIMULASI DATA ---
+    let energyCounter = 0; // akumulasi energi
 
-    client.onMessageArrived = (message) => {
-      try {
-        const data = JSON.parse(message.payloadString);
-        console.log(data);
-        document.getElementById("volt").textContent = (data.volt || 0);
-        document.getElementById("arus").textContent = (data.arus || 0);
-        document.getElementById("daya").textContent = (data.daya || 0);
-        document.getElementById("kwh").textContent  = (data.kwh  || 0);
-        document.getElementById("frek").textContent = (data.frek || 0);
-        document.getElementById("pf").textContent   = (data.pf   || 0);
-      } catch (e) {
-        console.error("❌ Invalid JSON:", message.payloadString);
-      }
-    };
+    function generateFakeData() {
+      const volt = (220 + Math.random() * 10).toFixed(1);      // 220–230V
+      const arus = (Math.random() * 4).toFixed(2);             // 0–4A
+      const daya = (volt * arus).toFixed(1);                   // P = V × I
+      const frek = (50 + Math.random() * 0.2).toFixed(2);      // 50Hz stabil
+      const pf   = (0.85 + Math.random() * 0.10).toFixed(2);   // 0.85–0.95
 
-    client.connect({
-      useSSL: true,
-      onSuccess: () => {
-        console.log("✅ Connected to MQTT");
-        client.subscribe("/aisi555/pzem");
-      },
-      onFailure: (err) => {
-        console.error("💥 MQTT connection failed:", err);
-      }
-    });
+      // energi kWh (simulasi kecil)
+      energyCounter += (daya / 3600000); 
+      const kwh = energyCounter.toFixed(4);
+
+      // UPDATE TAMPILAN
+      document.getElementById("volt").textContent = volt;
+      document.getElementById("arus").textContent = arus;
+      document.getElementById("daya").textContent = daya;
+      document.getElementById("kwh").textContent  = kwh;
+      document.getElementById("frek").textContent = frek;
+      document.getElementById("pf").textContent   = pf;
+    }
+
+    // update tiap 1 detik
+    setInterval(generateFakeData, 1000);
+    generateFakeData();
   </script>
+
 </body>
 </html>

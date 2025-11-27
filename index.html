@@ -1,141 +1,241 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PZEM Monitoring - Simulasi</title>
+<meta charset="UTF-8">
+<title>PZEM Dashboard – Tema C</title>
 
-  <!-- Canvas Gauges -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-gauges@2.1.7/gauge.min.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <style>
-    body {
-      background: #f5f5f5;
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      margin: 0;
-    }
-    h2 {
-      text-align: center;
-      color: #222;
-      margin-bottom: 5px;
-    }
-    .container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 25px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .gauge-box {
-      background: #ffffff;
-      padding: 15px;
-      border-radius: 12px;
-      text-align: center;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.12);
-    }
-  </style>
+<!-- Gauge library -->
+<script src="https://cdn.jsdelivr.net/npm/@berwin/gauge.js"></script>
+
+<!-- Font -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    background: #081b29;
+    font-family: "Montserrat", sans-serif;
+    color: #e0f7fa;
+  }
+
+  h2 {
+    text-align: center;
+    padding: 20px 0;
+    color: #4dd0e1;
+    letter-spacing: 1px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    padding: 20px;
+  }
+
+  .card {
+    padding: 15px;
+    background: #0a2336;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 255, 255, 0.15);
+  }
+
+  .value-box {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    padding: 8px 0;
+    color: #4dd0e1;
+  }
+
+  canvas {
+    margin-top: 15px;
+  }
+</style>
 </head>
 <body>
 
-  <h2>Real-Time Monitoring (Simulasi)</h2>
-  <h2>Kelompok 2 Jalaludin Achmad Akbar - 021</h2>
+<h2>PZEM DASHBOARD – Tema C (6 Data)</h2>
 
-  <div class="container">
-    <div class="gauge-box">
-      <canvas id="gaugeVolt" data-type="radial-gauge"
-        data-width="220" data-height="220"
-        data-min-value="0" data-max-value="300"
-        data-major-ticks="0,50,100,150,200,250,300"
-        data-units="V" data-title="Tegangan"
-        data-value="0" data-color-value="#FF5722"
-        data-glow="true"></canvas>
-    </div>
+<div class="grid">
 
-    <div class="gauge-box">
-      <canvas id="gaugeArus" data-type="radial-gauge"
-        data-width="220" data-height="220"
-        data-min-value="0" data-max-value="50"
-        data-major-ticks="0,5,10,15,20,25,30,35,40,45,50"
-        data-units="A" data-title="Arus"
-        data-value="0" data-color-value="#2196F3"
-        data-glow="true"></canvas>
-    </div>
-
-    <div class="gauge-box">
-      <canvas id="gaugeDaya" data-type="radial-gauge"
-        data-width="220" data-height="220"
-        data-min-value="0" data-max-value="5000"
-        data-major-ticks="0,1000,2000,3000,4000,5000"
-        data-units="W" data-title="Daya"
-        data-value="0" data-color-value="#4CAF50"
-        data-glow="true"></canvas>
-    </div>
-
-    <div class="gauge-box">
-      <canvas id="gaugeKwh" data-type="radial-gauge"
-        data-width="220" data-height="220"
-        data-min-value="0" data-max-value="100"
-        data-major-ticks="0,20,40,60,80,100"
-        data-units="kWh" data-title="Energi"
-        data-value="0" data-color-value="#FF9800"
-        data-glow="true"></canvas>
-    </div>
-
-    <div class="gauge-box">
-      <canvas id="gaugeFrek" data-type="radial-gauge"
-        data-width="220" data-height="220"
-        data-min-value="40" data-max-value="60"
-        data-major-ticks="40,45,50,55,60"
-        data-units="Hz" data-title="Frekuensi"
-        data-value="50" data-color-value="#9C27B0"
-        data-glow="true"></canvas>
-    </div>
-
-    <div class="gauge-box">
-      <canvas id="gaugePf" data-type="radial-gauge"
-        data-width="220" data-height="220"
-        data-min-value="0" data-max-value="1"
-        data-major-ticks="0,0.2,0.4,0.6,0.8,1.0"
-        data-units="" data-title="Power Factor"
-        data-value="0" data-color-value="#795548"
-        data-glow="true"></canvas>
-    </div>
+  <!-- ===================== 1. TEGANGAN ===================== -->
+  <div class="card">
+    <h3>Tegangan (V)</h3>
+    <div id="volt_val" class="value-box">--</div>
+    <canvas id="volt_gauge" width="250" height="150"></canvas>
+    <canvas id="volt_chart"></canvas>
   </div>
 
-  <script>
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        const gauges = window.gauges || [];
-        if (gauges.length < 6) return;
+  <!-- ===================== 2. ARUS ===================== -->
+  <div class="card">
+    <h3>Arus (A)</h3>
+    <div id="arus_val" class="value-box">--</div>
+    <canvas id="arus_gauge" width="250" height="150"></canvas>
+    <canvas id="arus_chart"></canvas>
+  </div>
 
-        const gVolt = gauges[0];
-        const gArus = gauges[1];
-        const gDaya = gauges[2];
-        const gKwh  = gauges[3];
-        const gFrek = gauges[4];
-        const gPf   = gauges[5];
+  <!-- ===================== 3. DAYA ===================== -->
+  <div class="card">
+    <h3>Daya (W)</h3>
+    <div id="daya_val" class="value-box">--</div>
+    <canvas id="daya_gauge" width="250" height="150"></canvas>
+    <canvas id="daya_chart"></canvas>
+  </div>
 
-        // === SIMULASI DATA ===
-        setInterval(() => {
-          let volt = 210 + Math.random() * 40;  // 210–250V
-          let arus = Math.random() * 10;        // 0–10A
-          let daya = volt * arus;               // sederhana
-          let kwh  = (Math.random() * 10).toFixed(2);
-          let frek = 49 + Math.random() * 2;    // 49–51Hz
-          let pf   = (0.6 + Math.random() * 0.4).toFixed(2);
+  <!-- ===================== 4. ENERGI ===================== -->
+  <div class="card">
+    <h3>Energi (kWh)</h3>
+    <div id="kwh_val" class="value-box">--</div>
+    <canvas id="kwh_gauge" width="250" height="150"></canvas>
+    <canvas id="kwh_chart"></canvas>
+  </div>
 
-          gVolt.value = volt;
-          gArus.value = arus;
-          gDaya.value = daya;
-          gKwh.value  = kwh;
-          gFrek.value = frek;
-          gPf.value   = pf;
-        }, 1000);
+  <!-- ===================== 5. FREKUENSI ===================== -->
+  <div class="card">
+    <h3>Frekuensi (Hz)</h3>
+    <div id="frek_val" class="value-box">--</div>
+    <canvas id="frek_gauge" width="250" height="150"></canvas>
+    <canvas id="frek_chart"></canvas>
+  </div>
 
-      }, 800);
-    });
-  </script>
+  <!-- ===================== 6. POWER FACTOR ===================== -->
+  <div class="card">
+    <h3>Power Factor</h3>
+    <div id="pf_val" class="value-box">--</div>
+    <canvas id="pf_gauge" width="250" height="150"></canvas>
+    <canvas id="pf_chart"></canvas>
+  </div>
+
+</div>
+
+<!-- MQTT -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
+
+<script>
+// =====================================
+// GAUGE SETUP
+// =====================================
+function createGauge(canvasId, min, max) {
+  return new Gauge({
+    canvas: document.getElementById(canvasId),
+    minValue: min,
+    maxValue: max,
+    value: 0,
+    colorNumbers: "#4dd0e1"
+  });
+}
+
+let gauge_volt = createGauge("volt_gauge", 0, 300);
+let gauge_arus = createGauge("arus_gauge", 0, 20);
+let gauge_daya = createGauge("daya_gauge", 0, 5000);
+let gauge_kwh  = createGauge("kwh_gauge", 0, 999);
+let gauge_frek = createGauge("frek_gauge", 40, 70);
+let gauge_pf   = createGauge("pf_gauge", 0, 1);
+
+// =====================================
+// CHART SETUP
+// =====================================
+function createSmoothChart(id, label) {
+  return new Chart(document.getElementById(id), {
+    type: "line",
+    data: {
+      labels: [],
+      datasets: [{
+        label: label,
+        data: [],
+        borderWidth: 2,
+        borderColor: "#4dd0e1",
+        fill: false,
+        tension: 0.4   // SMOOTH line
+      }]
+    },
+    options: {
+      responsive: true,
+      animation: false,
+      scales: {
+        x: { display: false },
+        y: { grid: { color: "#0d2f44" } }
+      }
+    }
+  });
+}
+
+let chart_volt = createSmoothChart("volt_chart", "Volt");
+let chart_arus = createSmoothChart("arus_chart", "Arus");
+let chart_daya = createSmoothChart("daya_chart", "Daya");
+let chart_kwh  = createSmoothChart("kwh_chart", "Energi");
+let chart_frek = createSmoothChart("frek_chart", "Frekuensi");
+let chart_pf   = createSmoothChart("pf_chart", "Power Factor");
+
+// Tambah data ke grafik
+function pushChart(chart, value) {
+  const t = new Date().toLocaleTimeString();
+
+  chart.data.labels.push(t);
+  chart.data.datasets[0].data.push(value);
+
+  if (chart.data.labels.length > 20) {
+    chart.data.labels.shift();
+    chart.data.datasets[0].data.shift();
+  }
+  chart.update();
+}
+
+// =====================================
+// MQTT
+// =====================================
+const client = new Paho.MQTT.Client(
+  "test.mosquitto.org",
+  8081,
+  "/mqtt",
+  "dashboard-" + Date.now()
+);
+
+client.onMessageArrived = (msg) => {
+  try {
+    const d = JSON.parse(msg.payloadString);
+
+    // TAMPILAN ANGKA
+    volt_val.textContent = d.volt;
+    arus_val.textContent = d.arus;
+    daya_val.textContent = d.daya;
+    kwh_val.textContent  = d.kwh;
+    frek_val.textContent = d.frek;
+    pf_val.textContent   = d.pf;
+
+    // GAUGE
+    gauge_volt.setValue(d.volt);
+    gauge_arus.setValue(d.arus);
+    gauge_daya.setValue(d.daya);
+    gauge_kwh.setValue(d.kwh);
+    gauge_frek.setValue(d.frek);
+    gauge_pf.setValue(d.pf);
+
+    // GRAFIK
+    pushChart(chart_volt, d.volt);
+    pushChart(chart_arus, d.arus);
+    pushChart(chart_daya, d.daya);
+    pushChart(chart_kwh,  d.kwh);
+    pushChart(chart_frek, d.frek);
+    pushChart(chart_pf,   d.pf);
+
+  } catch (e) {
+    console.log("JSON Error:", msg.payloadString);
+  }
+};
+
+client.connect({
+  useSSL: true,
+  onSuccess: () => {
+    console.log("MQTT Connected");
+    client.subscribe("/aisi555/pzem");
+  }
+});
+</script>
+
 </body>
 </html>
